@@ -51,3 +51,5 @@ RUN python -m pip install \
     -r requirements-dev.txt
 
 USER shirley
+
+FROM runtime AS production
