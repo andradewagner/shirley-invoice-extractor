@@ -1,0 +1,6 @@
+name: shirley-invoice-extractor
+channels:
+  - defaults
+dependencies:
+  - python=3.12
+prefix: /home/wagner/anaconda3/envs/shirley-invoice-extractor

@@ -1,0 +1,33 @@
+services:
+  shirley-invoice-extractor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    image: shirley-invoice-extractor:1.0.0
+
+    container_name: shirley-invoice-extractor
+
+    restart: unless-stopped
+
+    ports:
+      - "127.0.0.1:8001:8000"
+
+    environment:
+      PYTHONUNBUFFERED: "1"
+      TMPDIR: /tmp
+
+    read_only: true
+
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+
+    security_opt:
+      - no-new-privileges:true
+
+    cap_drop:
+      - ALL
+
+    mem_limit: 1g
+
+    pids_limit: 128
