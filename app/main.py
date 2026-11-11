@@ -25,7 +25,7 @@ CHUNK_SIZE = 1024 * 1024
 app = FastAPI(
     title="Shirley Invoice Extractor",
     description="Serviço independente de extração fiscal",
-    version="1.2.0",
+    version="1.3.0",
 )
 
 
@@ -34,7 +34,7 @@ async def health():
     return {
         "status": "healthy",
         "service": "shirley-invoice-extractor",
-        "version": "1.2.0",
+        "version": "1.3.0",
     }
 
 
