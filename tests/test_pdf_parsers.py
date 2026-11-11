@@ -131,6 +131,41 @@ class FiscalExtractionTests(unittest.TestCase):
             )
         )
 
+    def test_nfe_nao_usa_website_como_emitente(self):
+        text = NFE_TEXT.replace(
+            "EMPRESA EXEMPLO LTDA          DANFE",
+            "www.exemplo.com.br          DANFE"
+        )
+
+        result = self.extract_text(text)
+
+        self.assertIsNone(result["issuer_name"])
+        self.assertTrue(result["requires_review"])
+
+    def test_nfse_nao_confunde_imposto_com_total(self):
+        text = NFSE_TEXT.replace(
+            "VALOR TOTAL DA NFS-E\n150,00",
+            "VALOR TOTAL DA NFS-E\n"
+            "INFORMAÇÕES TRIBUTÁRIAS\n"
+            "ISS RETIDO: 0,00\n"
+            "VALOR LÍQUIDO: 150,00"
+        )
+
+        result = self.extract_text(text)
+
+        self.assertIsNone(result["total_amount"])
+        self.assertTrue(result["requires_review"])
+
+    def test_nfse_preserva_valor_zero_explicito(self):
+        text = NFSE_TEXT.replace(
+            "VALOR TOTAL DA NFS-E\n150,00",
+            "VALOR TOTAL DA NFS-E\n0,00"
+        )
+
+        result = self.extract_text(text)
+
+        self.assertEqual(result["total_amount"], "0.00")
+
 
 if __name__ == "__main__":
     unittest.main()

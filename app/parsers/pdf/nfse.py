@@ -34,9 +34,44 @@ def parse_nfse(text):
                 )[0].strip()
             break
 
-    total_section = text.split("VALOR TOTAL DA NFS-E", 1)[-1]
+    total = None
 
-    total_match = MONEY.search(total_section)
-    total = total_match.group() if total_match else None
+    lines = text.splitlines()
+
+    for index, line in enumerate(lines):
+        label = re.search(
+            r'VALOR TOTAL DA NFS-E',
+            line,
+            re.I
+        )
+
+        if not label:
+            continue
+
+        # Primeiro verifica se o valor está na mesma linha.
+        remainder = line[label.end():].strip()
+
+        if remainder:
+            match = re.fullmatch(
+                r'(?:R\$\s*)?(\d{1,3}(?:\.\d{3})*,\d{2})',
+                remainder
+            )
+
+            if match:
+                total = match.group(1)
+
+        # Se o título estiver sozinho, verifica a linha seguinte.
+        elif index + 1 < len(lines):
+            candidate = lines[index + 1].strip()
+
+            match = re.fullmatch(
+                r'(?:R\$\s*)?(\d{1,3}(?:\.\d{3})*,\d{2})',
+                candidate
+            )
+
+            if match:
+                total = match.group(1)
+
+        break
 
     return number, cnpj, name, issue, total

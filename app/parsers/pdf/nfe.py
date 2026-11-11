@@ -34,6 +34,17 @@ def parse_nfe(text):
             header
         )
 
+    # Validação final aplicada a qualquer origem do nome.
+    if name:
+        name = name.strip()
+
+        if re.search(
+            r'(?:https?://|www\.|\S+@\S+)',
+            name,
+            re.I
+        ):
+            name = None
+
     recipient = (
         text.split("DESTINATÁRIO / REMETENTE", 1)[-1]
         .split("CÁLCULO DO IMPOSTO", 1)[0]
