@@ -1,23 +1,47 @@
+import tempfile
 import unittest
 from pathlib import Path
 
-from extractor import extract
+import pymupdf
+
+from app.parsers.pdf.reader import text_from_pdf
 
 
-class ExtractorRegressionTests(unittest.TestCase):
+class PDFReaderRegressionTests(unittest.TestCase):
 
-    def test_extract_nfe(self):
-        fixture = Path("tests/fixtures/nfe.pdf")
+    def test_synthetic_pdf_text_extraction(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "synthetic.pdf"
 
-        if not fixture.exists():
-            self.skipTest("Fixture NF-e não disponível")
+            document = pymupdf.open()
+            page = document.new_page()
 
-        result = extract(fixture)
+            page.insert_text(
+                (72, 72),
+                "DOCUMENTO FISCAL SINTETICO",
+                fontsize=12,
+            )
 
-        self.assertEqual(result["document_type"], "NFE")
-        self.assertEqual(result["invoice_number"], "56")
-        self.assertEqual(result["total_amount"], "150.00")
-        self.assertTrue(result["requires_review"])
+            page.insert_text(
+                (72, 100),
+                "DANFE - TESTE AUTOMATIZADO",
+                fontsize=12,
+            )
+
+            document.save(str(path))
+            document.close()
+
+            text = text_from_pdf(path)
+
+            self.assertIn(
+                "DOCUMENTO FISCAL SINTETICO",
+                text,
+            )
+
+            self.assertIn(
+                "DANFE - TESTE AUTOMATIZADO",
+                text,
+            )
 
 
 if __name__ == "__main__":

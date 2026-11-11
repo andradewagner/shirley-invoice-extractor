@@ -1,11 +1,11 @@
 import subprocess
 from pathlib import Path
 
-import fitz
+import pymupdf
 
 
 def text_from_pdf(path: Path) -> str:
-    with fitz.open(path) as pdf:
+    with pymupdf.open(path) as pdf:
         if pdf.page_count > 10:
             raise ValueError("PDF excede o limite de 10 páginas")
 
